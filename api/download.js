@@ -8,26 +8,40 @@ export default async function handler(req, res) {
     const RAPID_API_HOST = "instagram-downloader-download-instagram-stories-videos4.p.rapidapi.com";
 
     try {
-        const options = {
-            method: 'GET',
-            url: `https://${RAPID_API_HOST}/convert`,
+        const response = await axios.get(`https://${RAPID_API_HOST}/convert`, {
             params: { url: url },
             headers: {
                 'x-rapidapi-key': RAPID_API_KEY,
                 'x-rapidapi-host': RAPID_API_HOST
             }
-        };
-
-        const response = await axios.request(options);
-        const data = response.data;
-
-        res.status(200).json({
-            status: "success",
-            download_url: data.url,
-            thumbnail: data.thumbnail || data.thumb,
-            title: data.title || "Instagram Media"
         });
+
+        const data = response.data;
+        console.log("API Response:", data); // Debugging ke liye
+
+        // Check karein ke data mein 'url' hai ya 'links' array hai
+        let finalUrl = "";
+        if (data.url) {
+            finalUrl = Array.isArray(data.url) ? data.url[0] : data.url;
+        } else if (data.links && data.links.length > 0) {
+            finalUrl = data.links[0].url;
+        } else if (data.media) {
+            finalUrl = data.media;
+        }
+
+        if (finalUrl) {
+            return res.status(200).json({
+                status: "success",
+                download_url: finalUrl,
+                thumbnail: data.thumbnail || data.thumb || data.thumb_url || "",
+                title: data.title || "Instagram Media"
+            });
+        } else {
+            return res.status(400).json({ status: "error", message: "Media link not found in API response" });
+        }
+
     } catch (error) {
-        res.status(500).json({ status: "error", message: "API Response Error" });
+        console.error("API Error:", error.response ? error.response.data : error.message);
+        res.status(500).json({ status: "error", message: "API connection failed" });
     }
 }
