@@ -17,31 +17,42 @@ export default async function handler(req, res) {
         });
 
         const data = response.data;
-        console.log("API Response:", data); // Debugging ke liye
 
-        // Check karein ke data mein 'url' hai ya 'links' array hai
+        // --- DATA MINING (Link dhundne ka naya tareeka) ---
         let finalUrl = "";
+        let thumbnail = data.thumbnail || data.thumb || data.thumb_url || "";
+
+        // 1. Agar direct url ho (String ya Array)
         if (data.url) {
             finalUrl = Array.isArray(data.url) ? data.url[0] : data.url;
-        } else if (data.links && data.links.length > 0) {
+        } 
+        // 2. Agar 'links' array mein ho
+        else if (data.links && data.links.length > 0) {
             finalUrl = data.links[0].url;
-        } else if (data.media) {
-            finalUrl = data.media;
+            if(!thumbnail) thumbnail = data.links[0].thumbnail;
+        } 
+        // 3. Agar 'media' field mein ho
+        else if (data.media) {
+            finalUrl = Array.isArray(data.media) ? data.media[0] : data.media;
         }
 
-        if (finalUrl) {
+        // --- SUCCESS CHECK ---
+        if (finalUrl && typeof finalUrl === 'string') {
             return res.status(200).json({
                 status: "success",
                 download_url: finalUrl,
-                thumbnail: data.thumbnail || data.thumb || data.thumb_url || "",
-                title: data.title || "Instagram Media"
+                thumbnail: thumbnail,
+                title: data.title || "Instagram HD Media"
             });
         } else {
-            return res.status(400).json({ status: "error", message: "Media link not found in API response" });
+            // Agar API ne link nahi diya magar response aa gaya
+            return res.status(200).json({ 
+                status: "error", 
+                message: "API link nahi dery, shayad ye private video hai." 
+            });
         }
 
     } catch (error) {
-        console.error("API Error:", error.response ? error.response.data : error.message);
-        res.status(500).json({ status: "error", message: "API connection failed" });
+        res.status(500).json({ status: "error", message: "Server connection issue." });
     }
 }
