@@ -17,42 +17,41 @@ export default async function handler(req, res) {
         });
 
         const data = response.data;
-
-        // --- DATA MINING (Link dhundne ka naya tareeka) ---
+        
+        // --- DEEP SCANNER (Ab ye kahin se bhi link dhoond nikalega) ---
         let finalUrl = "";
-        let thumbnail = data.thumbnail || data.thumb || data.thumb_url || "";
+        
+        // Scenario 1: Direct link (String/Array)
+        if (typeof data.url === 'string') finalUrl = data.url;
+        else if (Array.isArray(data.url)) finalUrl = data.url[0];
 
-        // 1. Agar direct url ho (String ya Array)
-        if (data.url) {
-            finalUrl = Array.isArray(data.url) ? data.url[0] : data.url;
-        } 
-        // 2. Agar 'links' array mein ho
-        else if (data.links && data.links.length > 0) {
-            finalUrl = data.links[0].url;
-            if(!thumbnail) thumbnail = data.links[0].thumbnail;
-        } 
-        // 3. Agar 'media' field mein ho
-        else if (data.media) {
-            finalUrl = Array.isArray(data.media) ? data.media[0] : data.media;
+        // Scenario 2: Data ke andar 'data' object (Common in this API)
+        if (!finalUrl && data.data) {
+            if (typeof data.data.url === 'string') finalUrl = data.data.url;
+            else if (Array.isArray(data.data)) finalUrl = data.data[0].url || data.data[0];
         }
 
-        // --- SUCCESS CHECK ---
-        if (finalUrl && typeof finalUrl === 'string') {
+        // Scenario 3: Video links ya media list
+        if (!finalUrl && data.links) finalUrl = data.links[0]?.url;
+        if (!finalUrl && data.media) finalUrl = Array.isArray(data.media) ? data.media[0] : data.media;
+
+        // Final Check: Agar kahin bhi link mila
+        if (finalUrl) {
             return res.status(200).json({
                 status: "success",
                 download_url: finalUrl,
-                thumbnail: thumbnail,
-                title: data.title || "Instagram HD Media"
-            });
-        } else {
-            // Agar API ne link nahi diya magar response aa gaya
-            return res.status(200).json({ 
-                status: "error", 
-                message: "API link nahi dery, shayad ye private video hai." 
+                thumbnail: data.thumbnail || data.thumb || "https://i.postimg.cc/9XdCb7KX/Pngtree-instagram-logo-instagram-icon-3562023.png",
+                title: data.title || "Instagram Video"
             });
         }
 
+        // Agar bilkul kuch nahi mila to poora response bhej do debug ke liye
+        return res.status(200).json({ 
+            status: "error", 
+            message: "Link nahi mila. API Response: " + JSON.stringify(data).substring(0, 50) 
+        });
+
     } catch (error) {
-        res.status(500).json({ status: "error", message: "Server connection issue." });
+        res.status(500).json({ status: "error", message: "Server error or API Limit exceeded." });
     }
 }
