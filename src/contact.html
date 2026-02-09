@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - SaveInsta Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; line-height: 1.8; }
+        .gradient-text { background: linear-gradient(90deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .input-style { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px; width: 100%; outline: none; transition: 0.3s; }
+        .input-style:focus { border-color: #bc1888; background: rgba(255, 255, 255, 0.08); }
+    </style>
+</head>
+<body>
+
+    <header class="py-6 px-6 glass-card sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center gap-2">
+                <i class="fab fa-instagram text-2xl text-pink-500"></i>
+                <span class="text-xl font-extrabold tracking-tighter">Save<span class="gradient-text">Insta</span></span>
+            </a>
+            <a href="/" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-xs font-bold transition uppercase tracking-widest border border-white/10">
+                🏠 Back to Home
+            </a>
+        </div>
+    </header>
+
+    <main class="py-20 px-6">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 uppercase tracking-tighter text-center">
+                📩 Get in <span class="gradient-text">Touch</span>
+            </h1>
+            <p class="text-gray-400 text-center mb-12">Koi sawal hai ya feedback? Hamein message karein, hum jald jawab denge! 😊</p>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="glass-card rounded-3xl p-8 space-y-8">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-3 text-pink-500">
+                            <i class="fas fa-envelope"></i> Email Us
+                        </h3>
+                        <p class="text-gray-300">support@saveinstapro.com</p>
+                        <p class="text-xs text-gray-500 mt-1">(Response time: 24-48 hours)</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-3 text-blue-500">
+                            <i class="fas fa-share-alt"></i> Social Support
+                        </h3>
+                        <div class="flex gap-4">
+                            <a href="#" class="text-2xl hover:text-pink-500 transition"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-2xl hover:text-pink-500 transition"><i class="fab fa-telegram"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-white/10">
+                        <p class="text-sm text-gray-400">SaveInsta Pro team hamesha aapki help ke liye tayaar hai. Ads ya partnership ke liye bhi isi email par rabta karein.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-3xl p-8">
+                    <form action="#" method="POST" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 ml-1 text-gray-400 uppercase tracking-widest">Full Name</label>
+                            <input type="text" placeholder="Aapka Naam" class="input-style text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 ml-1 text-gray-400 uppercase tracking-widest">Email Address</label>
+                            <input type="email" placeholder="Aapka Email" class="input-style text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 ml-1 text-gray-400 uppercase tracking-widest">Your Message</label>
+                            <textarea rows="4" placeholder="Apna sawal yahan likhein..." class="input-style text-white"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-pink-600 py-4 rounded-xl font-bold hover:scale-[1.02] transition shadow-lg uppercase tracking-widest mt-2">
+                            Send Message 🚀
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-10 text-center text-gray-600 text-xs tracking-widest uppercase">
+        &copy; 2026 SaveInsta Pro • Always here to help.
+    </footer>
+
+</body>
+</html>
