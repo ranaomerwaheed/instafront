@@ -1,7 +1,7 @@
-const axios = require('axios');
+import axios from 'axios';
 
 export default async function handler(req, res) {
-    // 1. Proxy Download Section (Real Download ke liye)
+    // 1. Proxy Download Section
     if (req.query.url && req.query.filename) {
         try {
             const response = await axios({
@@ -19,16 +19,24 @@ export default async function handler(req, res) {
 
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { url } = req.body;
-    const APIFY_TOKEN = "apify_api_kcbApjCnBOhTpiUujV8zjxyluOlQpk2V26Ee"; // Aapka Token
+    let { url } = req.body;
+    const APIFY_TOKEN = "apify_api_kcbApjCnBOhTpiUujV8zjxyluOlQpk2V26Ee"; 
 
     try {
-        // Step 1: Apify Actor ko call karna
-        // Hum "wait=30" use kar rahe hain taake scraper ko link nikalne ka time mile
+        // --- URL FIXER LOGIC ---
+        // Agar link mein 'www.' nahi hai to add kar dega taake Apify error na de
+        if (url.includes("instagram.com") && !url.includes("www.instagram.com")) {
+            url = url.replace("instagram.com", "www.instagram.com");
+        }
+        
+        // Faltu query parameters (?igsh=...) hatane ke liye
+        const cleanUrl = url.split('?')[0];
+
+        // Step 1: Apify Actor Run
         const runResponse = await axios.post(
             `https://api.apify.com/v2/acts/apify~instagram-scraper/runs?token=${APIFY_TOKEN}&wait=30`,
             {
-                "directUrls": [url],
+                "directUrls": [cleanUrl], // Sahi wala URL yahan jayega
                 "resultsType": "details",
                 "searchLimit": 1
             }
@@ -36,7 +44,7 @@ export default async function handler(req, res) {
 
         const datasetId = runResponse.data.data.defaultDatasetId;
 
-        // Step 2: Dataset se result fetch karna
+        // Step 2: Dataset fetch
         const datasetResponse = await axios.get(
             `https://api.apify.com/v2/datasets/${datasetId}/items?token=${APIFY_TOKEN}`
         );
@@ -51,18 +59,17 @@ export default async function handler(req, res) {
                 title: item.caption ? item.caption.substring(0, 50) + "..." : "Instagram Post",
                 thumbnail: item.displayUrl,
                 download_url: finalMediaUrl,
-                // Ye link button dabate hi download shuru karwa dega
                 proxy_url: `/api/download?filename=SaveInsta_Video.mp4&url=${encodeURIComponent(finalMediaUrl)}`
             });
         } else {
-            return res.status(404).json({ status: "error", message: "Media link nahi mila. Post private ho sakti hai." });
+            return res.status(404).json({ status: "error", message: "Media not found. Check if link is correct." });
         }
 
     } catch (error) {
-        console.error("Apify Error:", error.response?.data || error.message);
+        console.error("Apify Detailed Error:", error.response?.data || error.message);
         return res.status(500).json({ 
             status: "error", 
-            message: "Apify scraper ne response nahi diya. Credits check karein." 
+            message: "Apify Error: " + (error.response?.data?.error?.message || "Server Error")
         });
     }
 }
