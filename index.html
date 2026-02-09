@@ -162,6 +162,23 @@
     </footer>
 
     <script>
+async function pasteFromClipboard() {
+    try {
+        // Browser se clipboard ka text read karne ki koshish
+        const text = await navigator.clipboard.readText();
+        if (text) {
+            document.getElementById('videoUrl').value = text;
+            // Paste karne ke baad auto-vibrate (optional mobile feel ke liye)
+            if (navigator.vibrate) navigator.vibrate(50);
+        } else {
+            alert("Clipboard empty hai!");
+        }
+    } catch (err) {
+        // Agar browser permission na de (maslan HTTP par)
+        alert("Puraane browsers par ye kaam nahi karega, aap manually paste kar lein.");
+    }
+}
+        
         async function fetchVideo() {
             const urlInput = document.getElementById('videoUrl').value.trim();
             const btn = document.getElementById('mainBtn');
